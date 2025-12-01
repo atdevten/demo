@@ -1,0 +1,47 @@
+SAMPLE QUESTIONS TO TEST THE CHATBOT
+=====================================
+
+BASIC QUESTIONS:
+----------------
+1. How many days of annual leave do employees get?
+2. What is the annual leave entitlement for employees with more than 10 years of service?
+3. How many days of sick leave are employees entitled to per year?
+4. What is the maternity leave policy?
+5. How many days of paternity leave are male employees entitled to?
+
+DETAILED QUESTIONS:
+-------------------
+6. What is the procedure for requesting annual leave?
+7. How far in advance must annual leave be requested?
+8. Can unused annual leave be carried forward to the next year?
+9. What is the maximum number of annual leave days that can be carried over?
+10. Is a medical certificate required for sick leave?
+
+SPECIFIC SCENARIOS:
+-------------------
+11. What happens if I need to take leave during my probation period?
+12. How many days of bereavement leave am I entitled to for the death of a parent?
+13. What should I do if I need to take personal leave for an emergency?
+14. Can I take unpaid leave? What is the process?
+15. How many public holidays does the company observe per year?
+
+PROCEDURAL QUESTIONS:
+---------------------
+16. How do I check my leave balance?
+17. What information do I need to provide when requesting leave?
+18. How long does it take for a leave request to be approved?
+19. What should I do when returning from a long leave?
+20. What happens if I abuse the leave policy?
+
+COMPARISON QUESTIONS:
+--------------------
+21. What is the difference between annual leave and personal leave?
+22. How does sick leave differ from annual leave?
+23. What are the leave entitlements for new employees versus long-term employees?
+
+EDGE CASES:
+-----------
+24. What if a public holiday falls on a weekend?
+25. Can I take leave if I have no remaining annual leave days?
+26. What documentation is required for extended sick leave?
+
