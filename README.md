@@ -1,108 +1,120 @@
-# Chatbot RAG với LangChain, Qdrant và Ollama
+# RAG Chatbot with LangChain, Qdrant, and Ollama
 
-Chatbot RAG (Retrieval-Augmented Generation) cho phép người dùng upload tài liệu text và đặt câu hỏi về nội dung tài liệu. Hệ thống sử dụng:
+A production-ready RAG (Retrieval-Augmented Generation) chatbot that allows users to upload text documents and ask questions about their content. The system uses local, open-source models running entirely in Docker containers - no API keys required!
 
-- **LangChain**: Framework cho RAG pipeline
-- **Qdrant**: Vector database để lưu trữ embeddings
-- **Ollama**: LLM và embeddings models (local, miễn phí)
-- **Docker**: Containerization cho tất cả services
+## 🚀 Features
 
-## Kiến trúc
+- **Document Upload**: Upload `.txt` files and automatically process them
+- **Intelligent Q&A**: Ask questions about uploaded documents
+- **Local & Private**: All processing happens locally - no external API calls
+- **Dockerized**: Complete setup with Docker Compose
+- **Auto Model Download**: Models are automatically downloaded on first use
+- **Vector Search**: Fast semantic search using Qdrant vector database
 
-- **Backend**: Node.js/TypeScript với Express
-- **Frontend**: HTML/CSS/JavaScript (static files)
-- **Vector DB**: Qdrant (Docker container)
+## 🏗️ Architecture
+
+- **Backend**: Node.js/TypeScript with Express
+- **Frontend**: Simple HTML/CSS/JavaScript interface
+- **Vector Database**: Qdrant (Docker container)
 - **LLM & Embeddings**: Ollama (Docker container, local models)
+- **RAG Pipeline**: LangChain for orchestration
 
-## Yêu cầu
+## 📋 Requirements
 
-- Docker và Docker Compose
-- Không cần API keys - tất cả chạy local
+- Docker and Docker Compose
+- **No API keys needed** - everything runs locally!
 
-## Cài đặt và Chạy
+## 🛠️ Installation & Setup
 
-### 1. Clone repository và vào thư mục
+### 1. Clone the repository
 
 ```bash
-cd chatbot
+git clone https://github.com/atdevten/demo.git
+cd demo
 ```
 
-### 2. Create .env file (Optional)
+### 2. Create environment file (Optional)
 
 ```bash
 cp .env.example .env
 ```
 
-Edit `.env` if you want to customize:
-- `OLLAMA_URL`: Ollama service URL (default: http://ollama:11434)
-- `EMBEDDING_MODEL`: Embedding model (default: nomic-embed-text)
-- `LLM_MODEL`: LLM model (default: mistral)
-- `QDRANT_API_KEY`: Optional - Only needed if using Qdrant Cloud
+Edit `.env` to customize settings:
+- `OLLAMA_URL`: Ollama service URL (default: `http://ollama:11434`)
+- `EMBEDDING_MODEL`: Embedding model (default: `nomic-embed-text`)
+- `LLM_MODEL`: LLM model (default: `mistral`)
+- `QDRANT_API_KEY`: Optional - Only needed for Qdrant Cloud
 
-**Note**: Models will be automatically downloaded on first use. This may take a few minutes.
+**Note**: Models will be automatically downloaded on first use. Initial download may take a few minutes:
+- `nomic-embed-text`: ~274MB (embedding model)
+- `mistral`: ~4GB (LLM model)
 
-### 3. Build và chạy với Docker Compose
+### 3. Build and run with Docker Compose
 
 ```bash
 docker-compose up --build
 ```
 
-Lệnh này sẽ:
-- Build backend Docker image
-- Khởi động Qdrant container
-- Khởi động Ollama container
-- Khởi động backend container
-- Tự động tạo collection trong Qdrant
-- Tự động download Ollama models khi cần (lần đầu có thể mất vài phút)
+This command will:
+- Build the backend Docker image
+- Start Qdrant container
+- Start Ollama container
+- Start backend container
+- Automatically create the Qdrant collection
+- Automatically download Ollama models when needed (first time may take a few minutes)
 
-### 4. Truy cập ứng dụng
+### 4. Access the application
 
-Mở trình duyệt và truy cập: `http://localhost:3000`
+Open your browser and navigate to: `http://localhost:3000`
 
-## Sử dụng
+## 📖 Usage
 
-### Upload Tài Liệu
+### Upload Documents
 
-1. Click vào "Chọn File" hoặc kéo thả file `.txt` vào vùng upload
-2. Đợi hệ thống xử lý (chunking và tạo embeddings)
-3. Khi thấy thông báo thành công, bạn có thể đặt câu hỏi
+1. Click "Choose File" or drag and drop a `.txt` file into the upload area
+2. Wait for the system to process (chunking and creating embeddings)
+3. When you see a success message, you can start asking questions
 
-### Đặt Câu Hỏi
+### Ask Questions
 
-1. Nhập câu hỏi vào ô chat
-2. Nhấn Enter hoặc click "Gửi"
-3. Chatbot sẽ tìm kiếm thông tin liên quan trong tài liệu và trả lời
+1. Type your question in the chat input
+2. Press Enter or click "Send"
+3. The chatbot will search for relevant information in the documents and provide an answer
 
-## API Endpoints
+## 🔌 API Endpoints
 
 ### POST /api/upload
-Upload và xử lý tài liệu text.
+
+Upload and process a text document.
 
 **Request:**
-- Method: POST
-- Content-Type: multipart/form-data
+- Method: `POST`
+- Content-Type: `multipart/form-data`
 - Body: file (field name: `document`)
 
 **Response:**
 ```json
 {
   "success": true,
-  "message": "Tài liệu đã được xử lý và lưu trữ thành công",
+  "message": "Document uploaded, processed, and embeddings created successfully!",
   "data": {
     "filename": "example.txt",
+    "originalFilename": "example.txt",
     "chunks": 10,
-    "size": 5000
+    "size": 5000,
+    "status": "Embedded and stored in vector database"
   }
 }
 ```
 
 ### POST /api/chat
-Đặt câu hỏi về tài liệu.
+
+Ask a question about the uploaded documents.
 
 **Request:**
 ```json
 {
-  "question": "Câu hỏi của bạn",
+  "question": "Your question here",
   "topK": 5
 }
 ```
@@ -112,13 +124,16 @@ Upload và xử lý tài liệu text.
 {
   "success": true,
   "data": {
-    "answer": "Câu trả lời từ LLM",
+    "answer": "Answer from the LLM based on the document context",
     "sources": [
       {
-        "text": "Nội dung đoạn text",
+        "text": "Relevant text excerpt from the document",
         "metadata": {
           "filename": "example.txt",
-          "chunkIndex": 0
+          "filepath": "/path/to/file",
+          "uploadedAt": "2024-01-01T00:00:00.000Z",
+          "chunkIndex": 0,
+          "totalChunks": 10
         },
         "score": 0.95
       }
@@ -128,6 +143,7 @@ Upload và xử lý tài liệu text.
 ```
 
 ### GET /health
+
 Health check endpoint.
 
 **Response:**
@@ -141,70 +157,88 @@ Health check endpoint.
 }
 ```
 
-## Cấu trúc Dự án
+## 📁 Project Structure
 
 ```
 chatbot/
 ├── src/
-│   ├── config/          # Configuration
+│   ├── config/          # Configuration management
+│   │   └── index.ts
 │   ├── services/        # Core services
-│   │   ├── documentLoader.ts
-│   │   ├── textSplitter.ts
-│   │   ├── embedder.ts
-│   │   ├── vectorStore.ts
-│   │   └── ragChain.ts
+│   │   ├── documentLoader.ts    # Load and parse text files
+│   │   ├── textSplitter.ts     # Split documents into chunks
+│   │   ├── embedder.ts          # Create embeddings using Ollama
+│   │   ├── vectorStore.ts       # Qdrant vector database operations
+│   │   └── ragChain.ts          # RAG pipeline with LLM
 │   ├── routes/          # API routes
-│   │   ├── upload.ts
-│   │   ├── chat.ts
-│   │   └── health.ts
-│   └── index.ts         # Express server
-├── public/              # Frontend files
-│   ├── index.html
-│   └── app.js
-├── uploads/             # Uploaded documents
-├── Dockerfile           # Backend Dockerfile
-├── docker-compose.yml   # Docker orchestration
+│   │   ├── upload.ts   # Document upload endpoint
+│   │   ├── chat.ts     # Chat/query endpoint
+│   │   └── health.ts   # Health check endpoint
+│   └── index.ts        # Express server entry point
+├── public/             # Frontend files
+│   ├── index.html      # Main UI
+│   └── app.js          # Frontend JavaScript
+├── uploads/            # Uploaded documents (gitignored)
+├── docker/             # Docker-related scripts
+│   └── init-ollama.sh  # Ollama initialization script
+├── Dockerfile          # Backend Dockerfile
+├── docker-compose.yml  # Docker orchestration
 ├── package.json
 ├── tsconfig.json
+├── .env.example        # Environment variables template
 └── README.md
 ```
 
-## Environment Variables
+## 🔧 Environment Variables
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `PORT` | Server port | 3000 |
-| `NODE_ENV` | Environment | production |
-| `QDRANT_URL` | Qdrant URL | http://qdrant:6333 |
+| `PORT` | Server port | `3000` |
+| `NODE_ENV` | Environment | `production` |
+| `QDRANT_URL` | Qdrant service URL | `http://qdrant:6333` |
 | `QDRANT_API_KEY` | Qdrant API key | (optional) |
-| `COLLECTION_NAME` | Collection name | documents |
-| `OLLAMA_URL` | Ollama service URL | http://ollama:11434 |
-| `EMBEDDING_MODEL` | Embedding model | nomic-embed-text |
-| `LLM_MODEL` | LLM model | mistral |
-| `CHUNK_SIZE` | Chunk size | 1000 |
-| `CHUNK_OVERLAP` | Chunk overlap | 200 |
+| `COLLECTION_NAME` | Qdrant collection name | `documents` |
+| `OLLAMA_URL` | Ollama service URL | `http://ollama:11434` |
+| `EMBEDDING_MODEL` | Embedding model name | `nomic-embed-text` |
+| `LLM_MODEL` | LLM model name | `mistral` |
+| `CHUNK_SIZE` | Document chunk size (characters) | `1000` |
+| `CHUNK_OVERLAP` | Chunk overlap (characters) | `200` |
 
-## Troubleshooting
+## 🐛 Troubleshooting
 
-### Qdrant không kết nối được
-- Kiểm tra Qdrant container đang chạy: `docker ps`
-- Kiểm tra logs: `docker-compose logs qdrant`
-- Đảm bảo `QDRANT_URL` trong .env đúng với service name trong docker-compose
+### Qdrant Connection Issues
 
-### Ollama model errors
-- Models sẽ tự động được download khi cần
-- Lần đầu download có thể mất vài phút (nomic-embed-text ~274MB, mistral ~4GB)
-- Kiểm tra logs: `docker-compose logs ollama`
-- Pull model thủ công: `docker exec chatbot-ollama ollama pull nomic-embed-text`
+- Check if Qdrant container is running: `docker ps`
+- Check logs: `docker-compose logs qdrant`
+- Ensure `QDRANT_URL` in `.env` matches the service name in `docker-compose.yml`
 
-### Upload file lỗi
-- Đảm bảo file là `.txt`
-- Kiểm tra kích thước file (max 10MB)
-- Kiểm tra logs: `docker-compose logs backend`
+### Ollama Model Errors
 
-## Development
+- Models are automatically downloaded when needed
+- First download may take several minutes:
+  - `nomic-embed-text`: ~274MB
+  - `mistral`: ~4GB
+- Check logs: `docker-compose logs ollama`
+- Manually pull a model: `docker exec chatbot-ollama ollama pull nomic-embed-text`
+- If you see "EOF" errors, wait a few seconds for the model to finish loading
 
-### Chạy local (không Docker)
+### Upload File Errors
+
+- Ensure the file is `.txt` format
+- Check file size (max 10MB)
+- Check logs: `docker-compose logs backend`
+- Verify the file is valid UTF-8 text
+
+### Collection Dimension Mismatch
+
+If you see "Bad Request" errors when uploading:
+- The system automatically detects and fixes dimension mismatches
+- Collection will be recreated with the correct dimension
+- Check logs for dimension mismatch warnings
+
+## 💻 Development
+
+### Run Locally (without Docker)
 
 ```bash
 # Install dependencies
@@ -216,17 +250,58 @@ npm run build
 # Start Qdrant (Docker)
 docker run -p 6333:6333 qdrant/qdrant
 
+# Start Ollama (Docker)
+docker run -p 11434:11434 ollama/ollama
+
+# Set environment variables
+export OLLAMA_URL=http://localhost:11434
+export QDRANT_URL=http://localhost:6333
+
 # Start backend
 npm start
 ```
 
-### Development mode với hot reload
+### Development Mode with Hot Reload
 
 ```bash
 npm run dev
 ```
 
-## License
+### Available Scripts
+
+- `npm run build` - Build TypeScript to JavaScript
+- `npm start` - Start the production server
+- `npm run dev` - Start development server with hot reload
+- `npm run clean` - Remove build directory
+
+## 🔄 Current Status
+
+✅ **Fully Functional**
+- Document upload and processing
+- Automatic embedding generation with Ollama
+- Vector storage in Qdrant
+- RAG-based question answering
+- Docker Compose setup
+- Automatic model downloading
+- Collection dimension auto-fix
+
+## 📝 Notes
+
+- **Privacy**: All processing happens locally - no data is sent to external services
+- **Performance**: First document upload may be slower as models are downloaded/loaded
+- **Storage**: Uploaded documents are stored in the `uploads/` directory
+- **Models**: Ollama models are cached in Docker volume `ollama_data`
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## 📄 License
 
 MIT
 
+## 🙏 Acknowledgments
+
+- [LangChain](https://github.com/langchain-ai/langchain) - RAG framework
+- [Qdrant](https://github.com/qdrant/qdrant) - Vector database
+- [Ollama](https://github.com/ollama/ollama) - Local LLM runtime
