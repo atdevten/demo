@@ -6,9 +6,6 @@ import uploadRouter from './routes/upload';
 import chatRouter from './routes/chat';
 import healthRouter from './routes/health';
 import { VectorStore } from './services/vectorStore';
-// Temporarily disabled patch - old endpoint still works despite deprecation warning
-// import { patchHfEndpoint } from './utils/hfEndpointPatch';
-// patchHfEndpoint();
 
 const app = express();
 

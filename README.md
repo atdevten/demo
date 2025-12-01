@@ -1,10 +1,10 @@
-# Chatbot RAG với LangChain, Qdrant và Hugging Face
+# Chatbot RAG với LangChain, Qdrant và Ollama
 
 Chatbot RAG (Retrieval-Augmented Generation) cho phép người dùng upload tài liệu text và đặt câu hỏi về nội dung tài liệu. Hệ thống sử dụng:
 
 - **LangChain**: Framework cho RAG pipeline
 - **Qdrant**: Vector database để lưu trữ embeddings
-- **Hugging Face**: LLM và embeddings models (miễn phí)
+- **Ollama**: LLM và embeddings models (local, miễn phí)
 - **Docker**: Containerization cho tất cả services
 
 ## Kiến trúc
@@ -12,12 +12,12 @@ Chatbot RAG (Retrieval-Augmented Generation) cho phép người dùng upload tà
 - **Backend**: Node.js/TypeScript với Express
 - **Frontend**: HTML/CSS/JavaScript (static files)
 - **Vector DB**: Qdrant (Docker container)
-- **LLM**: Hugging Face Inference API
+- **LLM & Embeddings**: Ollama (Docker container, local models)
 
 ## Yêu cầu
 
 - Docker và Docker Compose
-- (Tùy chọn) Hugging Face API key để tăng rate limit
+- Không cần API keys - tất cả chạy local
 
 ## Cài đặt và Chạy
 
@@ -27,17 +27,19 @@ Chatbot RAG (Retrieval-Augmented Generation) cho phép người dùng upload tà
 cd chatbot
 ```
 
-### 2. Create .env file (Required for Hugging Face)
+### 2. Create .env file (Optional)
 
 ```bash
 cp .env.example .env
 ```
 
-Edit `.env` and add your Hugging Face API key:
-- `HUGGINGFACE_API_KEY`: **REQUIRED** - Get your free API key at https://huggingface.co/settings/tokens
+Edit `.env` if you want to customize:
+- `OLLAMA_URL`: Ollama service URL (default: http://ollama:11434)
+- `EMBEDDING_MODEL`: Embedding model (default: nomic-embed-text)
+- `LLM_MODEL`: LLM model (default: mistral)
 - `QDRANT_API_KEY`: Optional - Only needed if using Qdrant Cloud
 
-**Important**: Without `HUGGINGFACE_API_KEY`, the chatbot will not be able to create embeddings or generate answers.
+**Note**: Models will be automatically downloaded on first use. This may take a few minutes.
 
 ### 3. Build và chạy với Docker Compose
 
@@ -48,8 +50,10 @@ docker-compose up --build
 Lệnh này sẽ:
 - Build backend Docker image
 - Khởi động Qdrant container
+- Khởi động Ollama container
 - Khởi động backend container
 - Tự động tạo collection trong Qdrant
+- Tự động download Ollama models khi cần (lần đầu có thể mất vài phút)
 
 ### 4. Truy cập ứng dụng
 
@@ -174,9 +178,9 @@ chatbot/
 | `QDRANT_URL` | Qdrant URL | http://qdrant:6333 |
 | `QDRANT_API_KEY` | Qdrant API key | (optional) |
 | `COLLECTION_NAME` | Collection name | documents |
-| `HUGGINGFACE_API_KEY` | HF API key | (optional) |
-| `EMBEDDING_MODEL` | Embedding model | sentence-transformers/all-MiniLM-L6-v2 |
-| `LLM_MODEL` | LLM model | mistralai/Mistral-7B-Instruct-v0.1 |
+| `OLLAMA_URL` | Ollama service URL | http://ollama:11434 |
+| `EMBEDDING_MODEL` | Embedding model | nomic-embed-text |
+| `LLM_MODEL` | LLM model | mistral |
 | `CHUNK_SIZE` | Chunk size | 1000 |
 | `CHUNK_OVERLAP` | Chunk overlap | 200 |
 
@@ -187,10 +191,11 @@ chatbot/
 - Kiểm tra logs: `docker-compose logs qdrant`
 - Đảm bảo `QDRANT_URL` trong .env đúng với service name trong docker-compose
 
-### Hugging Face API errors
-- Nếu không có API key, rate limit sẽ rất thấp
-- Lấy API key miễn phí tại: https://huggingface.co/settings/tokens
-- Thêm vào `.env`: `HUGGINGFACE_API_KEY=your_key_here`
+### Ollama model errors
+- Models sẽ tự động được download khi cần
+- Lần đầu download có thể mất vài phút (nomic-embed-text ~274MB, mistral ~4GB)
+- Kiểm tra logs: `docker-compose logs ollama`
+- Pull model thủ công: `docker exec chatbot-ollama ollama pull nomic-embed-text`
 
 ### Upload file lỗi
 - Đảm bảo file là `.txt`

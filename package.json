@@ -1,7 +1,7 @@
 {
   "name": "chatbot-rag",
   "version": "1.0.0",
-  "description": "Chatbot RAG với LangChain, Qdrant và Hugging Face",
+  "description": "Chatbot RAG với LangChain, Qdrant và Ollama",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
@@ -14,12 +14,11 @@
     "rag",
     "langchain",
     "qdrant",
-    "huggingface"
+    "ollama"
   ],
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@huggingface/inference": "^2.8.0",
     "@langchain/community": "^0.0.20",
     "@langchain/core": "^0.1.23",
     "@qdrant/js-client-rest": "^1.9.0",
